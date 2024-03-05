@@ -14,7 +14,7 @@ if ($doctorID !== null) {
     $currentDate = date('Y-m-d');
 
     // Prepare the SQL query with a WHERE clause to filter by patient ID and appointment date
-    $query = "SELECT * FROM medical_appointment WHERE doctor_id = '$doctorID' AND appointment_date >= '$currentDate'";
+    $query = "SELECT * FROM medical_appointment WHERE doctor_id = '$doctorID'";
 
     // Execute the query
     $result = mysqli_query($conn, $query);

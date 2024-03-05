@@ -27,7 +27,8 @@
                             <th>Doctor's Name</th>
                             <th>Doctor Type</th>
                             <th>Clinic Address</th>
-                            <th>Appointment</th>
+                            <th>Date</th>
+                            <th>Time</th>
                             <th>Status</th>
                             <th>Action</th>
                         </tr>
@@ -40,19 +41,20 @@
         <div class="w-1/5 bg-gradient-to-br from-green-200 to-green-600 min-h-screen">
             <div class="flex-col p-3 mt-24 items-center">
                 <div class="flex w-full space-x-4 text-xl justify-center font-black" id="welcome-text">
-                    Welcome 
+                    Welcome
                 </div>
                 <div class="flex w-full space-x-4 text-4xl justify-center font-black" id="patient-name-container">
                     <span id="patient-name"></span>
                 </div>
-                
+
                 <div class="flex w-full space-x-4 mt-28">
-                    <button class="w-10/12 mx-auto mb-8" id="openSpecModal">
+                    <button class="w-10/12 mx-auto mb-8" id="openAddModal">
                         <a href="#"
-                            class="w-full bg-blue-800 text-white font-bold uppercase rounded-lg py-2 px-4 inline-block">Schedule an appointment</a>
+                            class="w-full bg-blue-800 text-white font-bold uppercase rounded-lg py-2 px-4 inline-block">Schedule
+                            an appointment</a>
                     </button>
                 </div>
-                
+
                 <div class="flex w-full space-x-4 mt-28">
                     <button class="w-10/12 mx-auto my-5">
                         <a href="php/logout.php"
@@ -62,6 +64,188 @@
             </div>
         </div>
     </div>
+
+    <!-- Add Appointment modal -->
+    <div id="addModal" class="modal hidden fixed inset-0 overflow-y-auto">
+        <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+            <!-- Background overlay -->
+            <div class="fixed inset-0 transition-opacity" aria-hidden="true">
+                <div class="absolute inset-0 bg-gray-500 opacity-75"></div>
+            </div>
+
+            <!-- Modal content -->
+            <div class="fixed inset-0 flex items-center justify-center">
+                <div
+                    class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all align-middle sm:max-w-lg sm:w-full">
+                    <div class="flex justify-end pr-4 pt-2">
+                        <button onclick="cancelModal()"
+                            class="text-gray-500 hover:text-gray-800 focus:outline-none p-2">
+                            <svg class="h-7 w-7 fill-current" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                                <path fill-rule="evenodd"
+                                    d="M10 2a8 8 0 1 0 0 16 8 8 0 0 0 0-16zM5.293 6.707a1 1 0 1 1 1.414-1.414L10 8.586l3.293-3.293a1 1 0 1 1 1.414 1.414L11.414 10l3.293 3.293a1 1 0 1 1-1.414 1.414L10 11.414l-3.293 3.293a1 1 0 0 1-1.414-1.414L8.586 10 5.293 6.707z"
+                                    clip-rule="evenodd" />
+                            </svg>
+                        </button>
+                    </div>
+                    <div class="p-5 text-black font-bold text-2xl">Schedule an Appointment</div>
+                    <div class="p-5" id="sched">
+                        <form action="php/add-appointment-patient.php" method="POST"
+                            class="max-w-lg mx-auto mt-1 px-4 py-2 bg-slate-100">
+                            <div class="mb-4">
+                                <label for="add_doctor_type" class="block text-sm font-medium text-gray-700">Field of
+                                    Specialization</label>
+                                <select id="add_doctor_type" name="add_doctor_type" required
+                                    class="mt-1 p-2 focus:ring-blue-500 focus:border-blue-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
+                                    <option value="">Select Field</option>
+                                </select>
+                                <p id="add_spec-description" class="mt-2 italic text-green-800 text-xs"></p>
+                            </div>
+                            <div class="mb-4">
+                                <label for="add_doctor_id" class="block text-sm font-medium text-gray-700">Doctor
+                                    Name</label>
+                                <select id="add_doctor_id" name="add_doctor_id" required
+                                    class="mt-1 p-2 focus:ring-blue-500 focus:border-blue-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
+                                    <option value="">Select Doctor</option>
+                                </select>
+                            </div>
+                            <div class="mb-4">
+                                <label for="add_clinic_address" class="block text-sm font-medium text-gray-700">Clinic
+                                    Address</label>
+                                <input type="hidden" id="add_doctor_name" name="add_doctor_name" readonly
+                                    class="mt-1 p-2 focus:ring-blue-500 focus:border-blue-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
+                                <input type="text" id="add_clinic_address" name="add_clinic_address" readonly
+                                    class="mt-1 p-2 focus:ring-blue-500 focus:border-blue-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
+                            </div>
+                            <div class="mb-4">
+                                <label for="add_app_date" class="block text-sm font-medium text-gray-700">Appointment
+                                    Date</label>
+                                <input type="date" id="add_app_date" name="add_app_date" required
+                                    class="mt-1 p-2 focus:ring-blue-500 focus:border-blue-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
+                                <p id="add_date-message" class="mt-2 italic text-xs">Please select a date.</p>
+                            </div>
+                            <div class="mb-4">
+                                <label for="add_app_time" class="block text-sm font-medium text-gray-700">Time</label>
+                                <select id="add_app_time" name="add_app_time" required
+                                    class="mt-1 p-2 focus:ring-blue-500 focus:border-blue-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
+                                    <option value="">Select Time</option>
+                                    <option value="8:00 - 9:00 AM">8:00 - 9:00 AM</option>
+                                    <option value="9:00 - 10:00 AM">9:00 - 10:00 AM</option>
+                                    <option value="10:00 - 11:00 AM">10:00 - 11:00 AM</option>
+                                    <option value="11:00 - 12:00 AM">11:00 - 12:00 AM</option>
+                                    <option value="1:00 - 2:00 PM">1:00 - 2:00 PM</option>
+                                    <option value="2:00 - 3:00 PM">2:00 - 3:00 PM</option>
+                                    <option value="3:00 - 4:00 PM">3:00 - 4:00 PM</option>
+                                </select>
+                                <p id="add_time-message" class="mt-2 italic text-xs">Please select time. Only 2 slots
+                                    per
+                                    hour.</p>
+                            </div>
+
+                            <!-- Submit button -->
+                            <div class="mb-4 mt-10">
+                                <button type="submit"
+                                    class="w-full inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                                    Submit
+                                </button>
+                            </div>
+                        </form>
+
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+
+    <!-- Update Appointment modal -->
+    <div id="updateModal" class="modal hidden fixed inset-0 overflow-y-auto">
+        <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+            <!-- Background overlay -->
+            <div class="fixed inset-0 transition-opacity" aria-hidden="true">
+                <div class="absolute inset-0 bg-gray-500 opacity-75"></div>
+            </div>
+
+            <!-- Modal content -->
+            <div class="fixed inset-0 flex items-center justify-center">
+                <div
+                    class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all align-middle sm:max-w-lg sm:w-full">
+                    <div class="flex justify-end pr-4 pt-2">
+                        <button onclick="cancelModal()"
+                            class="text-gray-500 hover:text-gray-800 focus:outline-none p-2">
+                            <svg class="h-7 w-7 fill-current" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                                <path fill-rule="evenodd"
+                                    d="M10 2a8 8 0 1 0 0 16 8 8 0 0 0 0-16zM5.293 6.707a1 1 0 1 1 1.414-1.414L10 8.586l3.293-3.293a1 1 0 1 1 1.414 1.414L11.414 10l3.293 3.293a1 1 0 1 1-1.414 1.414L10 11.414l-3.293 3.293a1 1 0 0 1-1.414-1.414L8.586 10 5.293 6.707z"
+                                    clip-rule="evenodd" />
+                            </svg>
+                        </button>
+                    </div>
+                    <div class="p-5 text-black font-bold text-2xl">Reschedule Appointment</div>
+                    <div class="p-5" id="resched">
+                        <form action="php/update-appointment-patient.php" method="POST"
+                            class="max-w-lg mx-auto mt-1 px-4 py-2 bg-slate-100">
+                            <div class="mb-4">
+                                <input type="hidden" id="edit_id" name="edit_id" required
+                                    class="mt-1 p-2 focus:ring-blue-500 focus:border-blue-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
+                                <label for="edit_doctor_name" class="block text-sm font-medium text-gray-700">Doctor
+                                    Name</label>
+                                <input type="text" id="edit_doctor_name" name="edit_doctor_name" readonly
+                                    class="mt-1 p-2 focus:ring-blue-500 focus:border-blue-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
+                            </div>
+                            <div class="mb-4">
+                                <label for="edit_doctor_type" class="block text-sm font-medium text-gray-700">Field of
+                                    Specialization</label>
+                                <input type="text" id="edit_doctor_type" name="edit_doctor_type" readonly
+                                    class="mt-1 p-2 focus:ring-blue-500 focus:border-blue-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
+                                <p id="spec-description" class="mt-2 italic text-green-800 text-xs"></p>
+                            </div>
+                            <div class="mb-4">
+                                <label for="edit_clinic_address" class="block text-sm font-medium text-gray-700">Clinic
+                                    Address</label>
+                                <input type="text" id="edit_clinic_address" name="edit_clinic_address" readonly
+                                    class="mt-1 p-2 focus:ring-blue-500 focus:border-blue-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
+                            </div>
+                            <div class="mb-4">
+                                <label for="edit_app_date" class="block text-sm font-medium text-gray-700">Appointment
+                                    Date</label>
+                                <input type="date" id="edit_app_date" name="edit_app_date" required
+                                    class="mt-1 p-2 focus:ring-blue-500 focus:border-blue-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
+                                <p id="edit_date-message" class="mt-2 italic text-xs">Please select a date.</p>
+                            </div>
+                            <div class="mb-4">
+                                <label for="edit_app_time" class="block text-sm font-medium text-gray-700">Time</label>
+                                <select id="edit_app_time" name="edit_app_time" required
+                                    class="mt-1 p-2 focus:ring-blue-500 focus:border-blue-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
+                                    <option value="">Select Time</option>
+                                    <option value="8:00 - 9:00 AM">8:00 - 9:00 AM</option>
+                                    <option value="9:00 - 10:00 AM">9:00 - 10:00 AM</option>
+                                    <option value="10:00 - 11:00 AM">10:00 - 11:00 AM</option>
+                                    <option value="11:00 - 12:00 AM">11:00 - 12:00 AM</option>
+                                    <option value="1:00 - 2:00 PM">1:00 - 2:00 PM</option>
+                                    <option value="2:00 - 3:00 PM">2:00 - 3:00 PM</option>
+                                    <option value="3:00 - 4:00 PM">3:00 - 4:00 PM</option>
+                                </select>
+                                <p id="edit_time-message" class="mt-2 italic text-xs">Please select time. Only 2 slots
+                                    per
+                                    hour.</p>
+                            </div>
+
+                            <!-- Submit button -->
+                            <div class="mb-4 mt-10">
+                                <button type="submit"
+                                    class="w-full inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                                    Submit
+                                </button>
+                            </div>
+                        </form>
+
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
 
     <script src="js/patient.js"></script>
 </body>

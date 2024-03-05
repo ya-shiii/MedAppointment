@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Mar 04, 2024 at 08:25 AM
+-- Generation Time: Mar 05, 2024 at 08:20 PM
 -- Server version: 10.4.28-MariaDB
 -- PHP Version: 8.2.4
 
@@ -71,7 +71,7 @@ CREATE TABLE `doctor_list` (
 --
 
 INSERT INTO `doctor_list` (`DoctorID`, `FullName`, `Email`, `Phone`, `ClinicAddress`, `DoctorType`, `Username`, `Password`) VALUES
-(1, 'Dr. John Doe', 'john.doe@example.com', '123-456-7890', '123 Main St, City, Country', 'Neurology', 'john_doe', 'john_doe'),
+(1, 'Dr. John Doee', 'john.doe@example.com', '123', '123 Main St, City, Country', 'Neurology', 'doc1', 'doc1'),
 (2, 'Dr. Emily Johnson', 'emily.johnson@example.com', '234-567-8901', '456 Elm St, City, Country', 'Neurology', 'emily_johnson', 'neurologist456'),
 (3, 'Dr. Michael Lee', 'michael.lee@example.com', '345-678-9012', '789 Oak St, City, Country', 'Neurology', 'michael_lee', 'neurologist789'),
 (4, 'Dr. Sarah Brown', 'sarah.brown@example.com', '456-789-0123', '321 Maple St, City, Country', 'Cardiology', 'sarah_brown', 'cardiologist123'),
@@ -116,7 +116,8 @@ CREATE TABLE `medical_appointment` (
   `doctor_name` varchar(255) DEFAULT NULL,
   `doctor_type` varchar(100) DEFAULT NULL,
   `clinic_address` varchar(255) DEFAULT NULL,
-  `appointment_datetime` datetime DEFAULT NULL,
+  `appointment_date` date DEFAULT NULL,
+  `time` enum('8:00 - 9:00 AM','9:00 - 10:00 AM','10:00 - 11:00 AM','11:00-12:00 AM','1:00 - 2:00 PM','2:00 - 3:00 PM','3:00 - 4:00 PM') NOT NULL,
   `status` enum('pending','completed','cancelled') DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
@@ -124,12 +125,17 @@ CREATE TABLE `medical_appointment` (
 -- Dumping data for table `medical_appointment`
 --
 
-INSERT INTO `medical_appointment` (`appointment_id`, `patient_id`, `patient_name`, `doctor_id`, `doctor_name`, `doctor_type`, `clinic_address`, `appointment_datetime`, `status`) VALUES
-(1, 1, 'John Doe', 1, 'Dr. Smith', 'Neurology', '123 Main St, City', '2024-03-05 09:00:00', 'pending'),
-(2, 2, 'Jane Smith', 2, 'Dr. Johnson', 'Cardiology', '456 Elm St, Town', '2024-03-06 10:30:00', 'completed'),
-(3, 3, 'Michael Johnson', 3, 'Dr. Brown', 'Orthopedics', '789 Oak St, Village', '2024-03-07 14:00:00', 'pending'),
-(4, 4, 'Emily Wilson', 4, 'Dr. Lee', 'Dermatology', '101 Pine St, Suburb', '2024-03-08 11:15:00', 'pending'),
-(5, 5, 'David Davis', 5, 'Dr. Martinez', 'Ophthalmology', '202 Cedar St, Countryside', '2024-03-09 13:45:00', 'pending');
+INSERT INTO `medical_appointment` (`appointment_id`, `patient_id`, `patient_name`, `doctor_id`, `doctor_name`, `doctor_type`, `clinic_address`, `appointment_date`, `time`, `status`) VALUES
+(1, 1, 'John Doe', 1, 'Dr. Smith', 'Neurology', '123 Main St, City', '2024-03-05', '8:00 - 9:00 AM', 'pending'),
+(2, 1, 'Jane Smith', 1, 'Dr. Johnson', 'Cardiology', '456 Elm St, Town', '2024-03-06', '8:00 - 9:00 AM', 'cancelled'),
+(3, 3, 'Michael Johnson', 1, 'Dr. Brown', 'Orthopedics', '789 Oak St, Village', '2024-03-06', '9:00 - 10:00 AM', 'pending'),
+(4, 4, 'Emily Wilson', 1, 'Dr. Lee', 'Dermatology', '101 Pine St, Suburb', '2024-03-08', '8:00 - 9:00 AM', 'completed'),
+(5, 5, 'David Davis', 1, 'Dr. Martinez', 'Ophthalmology', '202 Cedar St, Countryside', '2024-03-03', '8:00 - 9:00 AM', 'pending'),
+(6, 1, 'John Smith', 1, 'Dr. John Doee', 'Neurology', '123 Main St, City, Country', '2024-03-07', '9:00 - 10:00 AM', 'pending'),
+(7, 1, 'John Smith', 1, 'Dr. John Doee', 'Neurology', '123 Main St, City, Country', '2024-03-08', '9:00 - 10:00 AM', 'pending'),
+(8, 1, 'John Smith', 4, 'Dr. Sarah Brown', 'Cardiology', '321 Maple St, City, Country', '2024-03-07', '9:00 - 10:00 AM', 'pending'),
+(9, 1, 'John Smith', 1, 'Dr. John Doee', 'Neurology', '123 Main St, City, Country', '2024-03-07', '8:00 - 9:00 AM', 'pending'),
+(10, 1, 'John Smith', 22, 'Dr. Logan Wilson', 'Urology', '345 Watermelon St, City, Country', '2024-03-07', '9:00 - 10:00 AM', 'pending');
 
 -- --------------------------------------------------------
 
@@ -153,10 +159,9 @@ CREATE TABLE `patients_list` (
 --
 
 INSERT INTO `patients_list` (`PatientID`, `FullName`, `Username`, `Password`, `Email`, `Age`, `Gender`, `Address`) VALUES
-(1, 'John Smith', 'john_smith', 'password123', 'john@example.com', 35, 'Male', '123 Main St, City, Country'),
-(2, 'Emily Johnson', 'emily_johnson', 'abc123', 'emily@example.com', 28, 'Female', '456 Elm St, City, Country'),
-(3, 'Michael Lee', 'michael_lee', 'pass123', 'michael@example.com', 45, 'Male', '789 Oak St, City, Country'),
-(4, 'asdfasdfasdf', 'user1', 'user1', 'asdf@asd', 22, 'Male', 'asdfasdf');
+(1, 'John Smith', 'user1', 'user1', 'john@example.com', 35, 'Male', '123 Main St, City, Country'),
+(2, 'Emily Johnson', 'user2', 'user2', 'emily@example.com', 28, 'Female', '456 Elm St, City, Country'),
+(3, 'Michael Lee', 'user3', 'user3', 'michael@example.com', 45, 'Male', '789 Oak St, City, Country');
 
 --
 -- Indexes for dumped tables
@@ -196,25 +201,25 @@ ALTER TABLE `patients_list`
 -- AUTO_INCREMENT for table `doctortypes`
 --
 ALTER TABLE `doctortypes`
-  MODIFY `DoctorTypeID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
+  MODIFY `DoctorTypeID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
 
 --
 -- AUTO_INCREMENT for table `doctor_list`
 --
 ALTER TABLE `doctor_list`
-  MODIFY `DoctorID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=31;
+  MODIFY `DoctorID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=36;
 
 --
 -- AUTO_INCREMENT for table `medical_appointment`
 --
 ALTER TABLE `medical_appointment`
-  MODIFY `appointment_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `appointment_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 
 --
 -- AUTO_INCREMENT for table `patients_list`
 --
 ALTER TABLE `patients_list`
-  MODIFY `PatientID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `PatientID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

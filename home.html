@@ -4,7 +4,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>User Home</title>
+    <title>Home</title>
+
+    <!-- Use Font Awesome CDN 
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+     Set the favicon to the Font Awesome icon 
+    <link rel="icon" type="image/svg+xml" href="briefcase-medical.svg">-->
+
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- DataTables CSS -->
     <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.css">
@@ -19,15 +25,31 @@
     <div class="w-full min-h-screen px-5 flex bg-gradient-to-bl from-blue-100 to-sky-500">
         <div class="w-3/4 flex min-h-screen">
             <div id="appoTableContainer" class="w-11/12 text-center p-5 mx-auto p-5 bg-white min-h-screen">
-                <div class="text-4xl font-bold my-2">Medical Appointments</div>
+                <div class="text-4xl font-bold mt-2 mb-20">Medical Appointments</div>
                 <table id="appoTable" class="display w-full">
                     <thead>
                         <tr>
                             <th>ID</th>
                             <th>Patient's Name</th>
-                            <th>Appointment</th>
+                            <th>Date</th>
+                            <th>Time</th>
                             <th>Status</th>
                             <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+            <div id="allAppoTableContainer" class="w-11/12 text-center p-5 mx-auto p-5 bg-white min-h-screen hidden">
+                <div class="text-4xl font-bold mt-2 mb-20">All Medical Appointments</div>
+                <table id="allAppoTable" class="display w-11/12">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Patient's Name</th>
+                            <th>Date</th>
+                            <th>Time</th>
+                            <th>Status</th>
                         </tr>
                     </thead>
                     <tbody></tbody>
@@ -38,10 +60,17 @@
         <div class="w-1/5 bg-gradient-to-br from-green-200 to-green-600 min-h-screen">
             <div class="flex-col p-3 mt-24 items-center">
                 <div class="flex w-full space-x-4 text-xl justify-center font-black" id="welcome-text">
-                    Welcome 
+                    Welcome
                 </div>
                 <div class="flex w-full space-x-4 text-4xl justify-center font-black" id="doctor-name-container">
                     <span id="doctor-name"></span>
+                </div>
+                <div class="flex w-full space-x-4 mt-8">
+                    <button class="w-10/12 mx-auto my-5">
+                        <a href="" id="switchbtn"
+                            class="w-full bg-black text-white font-bold uppercase rounded-lg py-2 px-4 inline-block">Show
+                            All Appointments</a>
+                    </button>
                 </div>
                 <div class="flex w-full space-x-4 mt-28">
                     <button class="w-10/12 mx-auto my-5">
@@ -53,6 +82,84 @@
         </div>
     </div>
 
+
+
+    <!-- Update Appointment modal -->
+    <div id="updateModal" class="modal hidden fixed inset-0 overflow-y-auto">
+        <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+            <!-- Background overlay -->
+            <div class="fixed inset-0 transition-opacity" aria-hidden="true">
+                <div class="absolute inset-0 bg-gray-500 opacity-75"></div>
+            </div>
+
+            <!-- Modal content -->
+            <div class="fixed inset-0 flex items-center justify-center">
+                <div
+                    class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all align-middle sm:max-w-lg sm:w-full">
+                    <div class="flex justify-end pr-4 pt-2">
+                        <button onclick="cancelUpdateModal()"
+                            class="text-gray-500 hover:text-gray-800 focus:outline-none p-2">
+                            <svg class="h-7 w-7 fill-current" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                                <path fill-rule="evenodd"
+                                    d="M10 2a8 8 0 1 0 0 16 8 8 0 0 0 0-16zM5.293 6.707a1 1 0 1 1 1.414-1.414L10 8.586l3.293-3.293a1 1 0 1 1 1.414 1.414L11.414 10l3.293 3.293a1 1 0 1 1-1.414 1.414L10 11.414l-3.293 3.293a1 1 0 0 1-1.414-1.414L8.586 10 5.293 6.707z"
+                                    clip-rule="evenodd" />
+                            </svg>
+                        </button>
+                    </div>
+                    <div class="p-5 text-black font-bold text-2xl">Reschedule Appointment</div>
+                    <div class="p-5" id="resched">
+                        <form action="php/update-appointment.php" method="POST"
+                            class="max-w-lg mx-auto mt-1 px-4 py-2 bg-slate-100">
+                            <div class="mb-4">
+                                <input type="hidden" id="edit_id" name="edit_id" required
+                                    class="mt-1 p-2 focus:ring-blue-500 focus:border-blue-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
+                                <label for="patient_name" class="block text-sm font-medium text-gray-700">Patient
+                                    Name</label>
+                                <input type="text" id="edit_username" name="edit_username" readonly
+                                    class="mt-1 p-2 focus:ring-blue-500 focus:border-blue-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
+                            </div>
+                            <div class="mb-4">
+                                <label for="app_date" class="block text-sm font-medium text-gray-700">Appointment
+                                    Date</label>
+                                <input type="date" id="app_date" name="app_date" required
+                                    class="mt-1 p-2 focus:ring-blue-500 focus:border-blue-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
+                                <p id="date-message" class="mt-2 italic text-xs">Please select a date.</p>
+                            </div>
+                            <div class="mb-4">
+                                <label for="app_time" class="block text-sm font-medium text-gray-700">Time</label>
+                                <select id="app_time" name="app_time" required
+                                    class="mt-1 p-2 focus:ring-blue-500 focus:border-blue-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
+                                    <option value="">Select Time</option>
+                                    <option value="8:00 - 9:00 AM">8:00 - 9:00 AM</option>
+                                    <option value="9:00 - 10:00 AM">9:00 - 10:00 AM</option>
+                                    <option value="10:00 - 11:00 AM">10:00 - 11:00 AM</option>
+                                    <option value="11:00 - 12:00 AM">11:00 - 12:00 AM</option>
+                                    <option value="1:00 - 2:00 PM">1:00 - 2:00 PM</option>
+                                    <option value="2:00 - 3:00 PM">2:00 - 3:00 PM</option>
+                                    <option value="3:00 - 4:00 PM">3:00 - 4:00 PM</option>
+                                </select>
+                                <p id="time-message" class="mt-2 italic text-xs">Please select time. Only 2 slots per
+                                    hour.</p>
+                            </div>
+
+                            <!-- Submit button -->
+                            <div class="mb-4 mt-10">
+                                <button type="submit"
+                                    class="w-full inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                                    Submit
+                                </button>
+                            </div>
+                        </form>
+
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+
+    
     <script src="js/doctor.js"></script>
 </body>
 
