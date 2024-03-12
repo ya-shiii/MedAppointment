@@ -53,7 +53,7 @@ $(document).ready(function () {
 
                     if (row.status === 'pending') {
                         // Return a button for cancel action
-                        return reschedbtn + confirmbtn + cancelbtn;
+                        return confirmbtn + reschedbtn + cancelbtn;
                     } else if (row.status === 'confirmed') {
                         return compbtn;
 
