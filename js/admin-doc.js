@@ -18,7 +18,7 @@ $(document).ready(function () {
                     return '<button class="edit-button w-full bg-blue-500 text-white px-4 py-2 rounded-lg mr-2" data-id="' + row.DoctorID + '">Edit</button><button class="delete-button w-full bg-red-500 text-white px-4 py-2 rounded-lg mr-2 mt-1" data-id="' + row.DoctorID + '">Delete</button>';
                 }
             }
-        ]
+        ],order: [[0, 'desc']] // Order by the 'id' column descending
     });
 
     // Edit button click handler
