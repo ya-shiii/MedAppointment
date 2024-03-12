@@ -11,7 +11,7 @@ $patientId = isset($_SESSION['user_id']) ? $_SESSION['user_id'] : null;
 // Check if the patient ID is set
 if ($patientId !== null) {
     // Prepare the SQL query with a WHERE clause to filter by patient ID
-    $query = "SELECT * FROM medical_appointment WHERE patient_id = '$patientId' AND `status` = 'pending'";
+    $query = "SELECT * FROM medical_appointment WHERE patient_id = '$patientId'";
     
     // Execute the query
     $result = mysqli_query($conn, $query);

@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Mar 05, 2024 at 08:20 PM
+-- Generation Time: Mar 12, 2024 at 03:45 PM
 -- Server version: 10.4.28-MariaDB
 -- PHP Version: 8.2.4
 
@@ -71,10 +71,10 @@ CREATE TABLE `doctor_list` (
 --
 
 INSERT INTO `doctor_list` (`DoctorID`, `FullName`, `Email`, `Phone`, `ClinicAddress`, `DoctorType`, `Username`, `Password`) VALUES
-(1, 'Dr. John Doee', 'john.doe@example.com', '123', '123 Main St, City, Country', 'Neurology', 'doc1', 'doc1'),
-(2, 'Dr. Emily Johnson', 'emily.johnson@example.com', '234-567-8901', '456 Elm St, City, Country', 'Neurology', 'emily_johnson', 'neurologist456'),
-(3, 'Dr. Michael Lee', 'michael.lee@example.com', '345-678-9012', '789 Oak St, City, Country', 'Neurology', 'michael_lee', 'neurologist789'),
-(4, 'Dr. Sarah Brown', 'sarah.brown@example.com', '456-789-0123', '321 Maple St, City, Country', 'Cardiology', 'sarah_brown', 'cardiologist123'),
+(1, 'Dr. John Doe', 'john.doe@example.com', '123', '123 Main St, City, Country', 'Neurology', 'doc1', 'doc1'),
+(2, 'Dr. Emily Johnson', 'emily.johnson@example.com', '234', '456 Elm St, City, Country', 'Neurology', 'emily_johnson', 'neurologist456'),
+(3, 'Dr. Michael Lee', 'michael.lee@example.com', '345', '789 Oak St, City, Country', 'Neurology', 'michael_lee', 'neurologist789'),
+(4, 'Dr. Sarah Brown', 'sarah.brown@example.com', '456', '321 Maple St, City, Country', 'Cardiology', 'sarah_brown', 'cardiologist123'),
 (5, 'Dr. David Garcia', 'david.garcia@example.com', '567-890-1234', '654 Pine St, City, Country', 'Cardiology', 'david_garcia', 'cardiologist456'),
 (6, 'Dr. Jennifer Martinez', 'jennifer.martinez@example.com', '678-901-2345', '987 Cedar St, City, Country', 'Cardiology', 'jennifer_martinez', 'cardiologist789'),
 (7, 'Dr. William Wilson', 'william.wilson@example.com', '789-012-3456', '741 Birch St, City, Country', 'Orthopedics', 'william_wilson', 'orthopedist123'),
@@ -100,7 +100,8 @@ INSERT INTO `doctor_list` (`DoctorID`, `FullName`, `Email`, `Phone`, `ClinicAddr
 (27, 'Dr. Mia Hernandez', 'mia.hernandez@example.com', '789-012-3456', '890 Guava St, City, Country', 'Ophthalmology', 'mia_hernandez', 'ophthalmologist789'),
 (28, 'Dr. Lucas Martinez', 'lucas.martinez@example.com', '890-123-4567', '901 Pineapple St, City, Country', 'Psychiatry', 'lucas_martinez', 'psychiatrist123'),
 (29, 'Dr. Ella Brown', 'ella.brown@example.com', '901-234-5678', '012 Coconut St, City, Country', 'Psychiatry', 'ella_brown', 'psychiatrist456'),
-(30, 'Dr. Oliver Wilson', 'oliver.wilson@example.com', '012-345-6789', '123 Date St, City, Country', 'Psychiatry', 'oliver_wilson', 'psychiatrist789');
+(30, 'Dr. Oliver Wilson', 'oliver.wilson@example.com', '012-345-6789', '123 Date St, City, Country', 'Psychiatry', 'oliver_wilson', 'psychiatrist789'),
+(36, 'Joshua Jumamil Vicente', 'gamerotaku80085@yahoo.com', '9516545327', 'Isidro D. Tan, Tangub City', 'Cardiology', 'joshii', 'joshii');
 
 -- --------------------------------------------------------
 
@@ -118,7 +119,7 @@ CREATE TABLE `medical_appointment` (
   `clinic_address` varchar(255) DEFAULT NULL,
   `appointment_date` date DEFAULT NULL,
   `time` enum('8:00 - 9:00 AM','9:00 - 10:00 AM','10:00 - 11:00 AM','11:00-12:00 AM','1:00 - 2:00 PM','2:00 - 3:00 PM','3:00 - 4:00 PM') NOT NULL,
-  `status` enum('pending','completed','cancelled') DEFAULT NULL
+  `status` enum('pending','completed','cancelled','confirmed','reschedule') DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
@@ -126,16 +127,17 @@ CREATE TABLE `medical_appointment` (
 --
 
 INSERT INTO `medical_appointment` (`appointment_id`, `patient_id`, `patient_name`, `doctor_id`, `doctor_name`, `doctor_type`, `clinic_address`, `appointment_date`, `time`, `status`) VALUES
-(1, 1, 'John Doe', 1, 'Dr. Smith', 'Neurology', '123 Main St, City', '2024-03-05', '8:00 - 9:00 AM', 'pending'),
-(2, 1, 'Jane Smith', 1, 'Dr. Johnson', 'Cardiology', '456 Elm St, Town', '2024-03-06', '8:00 - 9:00 AM', 'cancelled'),
-(3, 3, 'Michael Johnson', 1, 'Dr. Brown', 'Orthopedics', '789 Oak St, Village', '2024-03-06', '9:00 - 10:00 AM', 'pending'),
-(4, 4, 'Emily Wilson', 1, 'Dr. Lee', 'Dermatology', '101 Pine St, Suburb', '2024-03-08', '8:00 - 9:00 AM', 'completed'),
-(5, 5, 'David Davis', 1, 'Dr. Martinez', 'Ophthalmology', '202 Cedar St, Countryside', '2024-03-03', '8:00 - 9:00 AM', 'pending'),
-(6, 1, 'John Smith', 1, 'Dr. John Doee', 'Neurology', '123 Main St, City, Country', '2024-03-07', '9:00 - 10:00 AM', 'pending'),
-(7, 1, 'John Smith', 1, 'Dr. John Doee', 'Neurology', '123 Main St, City, Country', '2024-03-08', '9:00 - 10:00 AM', 'pending'),
-(8, 1, 'John Smith', 4, 'Dr. Sarah Brown', 'Cardiology', '321 Maple St, City, Country', '2024-03-07', '9:00 - 10:00 AM', 'pending'),
-(9, 1, 'John Smith', 1, 'Dr. John Doee', 'Neurology', '123 Main St, City, Country', '2024-03-07', '8:00 - 9:00 AM', 'pending'),
-(10, 1, 'John Smith', 22, 'Dr. Logan Wilson', 'Urology', '345 Watermelon St, City, Country', '2024-03-07', '9:00 - 10:00 AM', 'pending');
+(1, 1, 'John Smith', 1, 'Dr. John Doe', 'Neurology', '123 Main St, City', '2024-03-12', '8:00 - 9:00 AM', 'pending'),
+(2, 1, 'John Smith', 1, 'Dr. John Doe', 'Cardiology', '456 Elm St, Town', '2024-03-06', '8:00 - 9:00 AM', 'cancelled'),
+(3, 3, 'Michael Lee', 1, 'Dr. John Doe', 'Orthopedics', '789 Oak St, Village', '2024-03-06', '9:00 - 10:00 AM', 'pending'),
+(4, 4, 'Emily Wilson', 1, 'Dr. John Doe', 'Dermatology', '101 Pine St, Suburb', '2024-03-08', '8:00 - 9:00 AM', 'completed'),
+(5, 5, 'David Davis', 1, 'Dr. John Doe', 'Ophthalmology', '202 Cedar St, Countryside', '2024-03-03', '8:00 - 9:00 AM', 'pending'),
+(6, 1, 'John Smith', 1, 'Dr. John Doe', 'Neurology', '123 Main St, City, Country', '2024-03-12', '9:00 - 10:00 AM', 'confirmed'),
+(7, 1, 'John Smith', 1, 'Dr. John Doe', 'Neurology', '123 Main St, City, Country', '2024-03-18', '9:00 - 10:00 AM', 'completed'),
+(8, 1, 'John Smith', 4, 'Dr. Sarah Brown', 'Cardiology', '321 Maple St, City, Country', '2024-03-14', '9:00 - 10:00 AM', 'pending'),
+(9, 1, 'John Smith', 1, 'Dr. John Doe', 'Neurology', '123 Main St, City, Country', '2024-03-07', '8:00 - 9:00 AM', 'pending'),
+(10, 1, 'John Smith', 22, 'Dr. Logan Wilson', 'Urology', '345 Watermelon St, City, Country', '2024-03-07', '9:00 - 10:00 AM', 'confirmed'),
+(11, 6, 'Joshua Jumamil Vicente', 2, 'Dr. Emily Johnson', 'Neurology', '456 Elm St, City, Country', '2024-03-13', '10:00 - 11:00 AM', 'pending');
 
 -- --------------------------------------------------------
 
@@ -161,7 +163,10 @@ CREATE TABLE `patients_list` (
 INSERT INTO `patients_list` (`PatientID`, `FullName`, `Username`, `Password`, `Email`, `Age`, `Gender`, `Address`) VALUES
 (1, 'John Smith', 'user1', 'user1', 'john@example.com', 35, 'Male', '123 Main St, City, Country'),
 (2, 'Emily Johnson', 'user2', 'user2', 'emily@example.com', 28, 'Female', '456 Elm St, City, Country'),
-(3, 'Michael Lee', 'user3', 'user3', 'michael@example.com', 45, 'Male', '789 Oak St, City, Country');
+(3, 'Michael Lee', 'user3', 'user3', 'michael@example.com', 45, 'Male', '789 Oak St, City, Country'),
+(6, 'Joshua Jumamil Vicente', 'user4', 'user4', 'gamerotaku80085@yahoo.cc', 22, 'Male', 'Isidro D. Tan, Tangub City'),
+(24, 'Emily Johnson', 'user5', 'user5', 'emily@example.com', 28, 'Male', '456 Elm St, City, Country'),
+(25, 'aasdfasdf', 'user6', 'user6', 'asdf@asdf', 22, 'Male', 'asdfasdf');
 
 --
 -- Indexes for dumped tables
@@ -207,19 +212,19 @@ ALTER TABLE `doctortypes`
 -- AUTO_INCREMENT for table `doctor_list`
 --
 ALTER TABLE `doctor_list`
-  MODIFY `DoctorID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=36;
+  MODIFY `DoctorID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=37;
 
 --
 -- AUTO_INCREMENT for table `medical_appointment`
 --
 ALTER TABLE `medical_appointment`
-  MODIFY `appointment_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
+  MODIFY `appointment_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
 
 --
 -- AUTO_INCREMENT for table `patients_list`
 --
 ALTER TABLE `patients_list`
-  MODIFY `PatientID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `PatientID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=26;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

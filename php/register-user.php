@@ -16,9 +16,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     // Check if username is 'admin'
     if ($username === 'admin') {
-        $response = array('success' => false, 'message' => 'Username "admin" is not allowed');
-        echo '<script>alert("Username \"admin\" is not allowed. Please choose a different username."); window.location.href = "../";</script>';
-        exit;
+        $response['message'] = 'Username "admin" is not allowed';
     }
 
     // Check for duplicates in patients list
@@ -26,19 +24,64 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $duplicateCheckResult = mysqli_query($conn, $duplicateCheckQuery);
 
     if (mysqli_num_rows($duplicateCheckResult) > 0) {
-        $response = array('success' => false, 'message' => 'Username or email already exists');
-        echo '<script>alert("Username or email already exists. Please try again."); window.location.href = "../";</script>';
-        exit;
+        $response['message'] = 'Username or email already exists';
     } else {
         // Check for duplicates in doctors list
         $duplicateCheckQuery1 = "SELECT * FROM doctor_list WHERE Username = '$username' OR Email = '$email'";
         $duplicateCheckResult1 = mysqli_query($conn, $duplicateCheckQuery1);
 
         if (mysqli_num_rows($duplicateCheckResult1) > 0) {
-            $response = array('success' => false, 'message' => 'Username or email already exists');
-            echo '<script>alert("Username or email already exists. Please try again."); window.location.href = "../";</script>';
-            exit;
+            $response['message'] = 'Username or email already exists';
         } else {
+            // Upload image
+            $target_dir = "../patient/";
+            $target_file = $target_dir . str_replace(' ', '_', $username) . ".jpg"; // Change file extension if needed
+            $imageFileType = strtolower(pathinfo($target_file, PATHINFO_EXTENSION));
+            $uploadOk = 1;
+
+            // Check if image file is a actual image or fake image
+            if (isset($_POST["submit"])) {
+                $check = getimagesize($_FILES["add_image"]["tmp_name"]);
+                if ($check !== false) {
+                    $uploadOk = 1;
+                } else {
+                    $response['message'] = 'File is not an image.';
+                    $uploadOk = 0;
+                }
+            }
+
+            // Check if file already exists
+            if (file_exists($target_file)) {
+                $response['message'] = 'Sorry, file already exists.';
+                $uploadOk = 0;
+            }
+
+            // Check file size
+            if ($_FILES["add_image"]["size"] > 500000) {
+                $response['message'] = 'Sorry, your file is too large.';
+                $uploadOk = 0;
+            }
+
+            // Allow only certain file formats
+            if (
+                $imageFileType != "jpg" && $imageFileType != "png" && $imageFileType != "jpeg"
+                && $imageFileType != "gif"
+            ) {
+                $response['message'] = 'Sorry, only JPG, JPEG, PNG & GIF files are allowed.';
+                $uploadOk = 0;
+            }
+
+            // Check if $uploadOk is set to 0 by an error
+            if ($uploadOk == 0) {
+                $response['message'] = 'Sorry, your file was not uploaded.';
+            } else {
+                if (move_uploaded_file($_FILES["add_image"]["tmp_name"], $target_file)) {
+                    $response['message'] = 'The file ' . htmlspecialchars(basename($_FILES["add_image"]["name"])) . ' has been uploaded.';
+                } else {
+                    $response['message'] = 'Sorry, there was an error uploading your file.';
+                }
+            }
+
             // Perform the insertion into the database
             $insertQuery = "INSERT INTO patients_list (Username, `Password`, FullName, Email, Age, Gender, `Address`) 
                 VALUES ('$username', '$password', '$full_name', '$email', $age, '$gender', '$address')";
@@ -46,22 +89,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $insertResult = mysqli_query($conn, $insertQuery);
 
             if ($insertResult) {
-                $response = array('success' => true, 'message' => 'User added successfully');
-                echo '<script>alert("Registered successfully."); window.location.href = "../";</script>';
-                exit;
+                $response['success'] = true;
+                $response['message'] = 'User added successfully';
             } else {
-                $response = array('success' => false, 'message' => ': ' . mysqli_error($conn));
-                echo '<script>alert("Error registering user ' . mysqli_error($conn) . '"); window.location.href = "../";</script>';
-                exit;
+                $response['message'] = ': ' . mysqli_error($conn);
             }
         }
     }
-
 } else {
     // Handle non-POST requests
-    $response = array('success' => false, 'message' => 'Invalid request method');
-    echo '<script>alert("Invalid request method"); window.location.href = "../../";</script>';
-    exit;
-
+    $response['message'] = 'Invalid request method';
 }
+
+// Send JSON response
+echo json_encode($response);
 ?>

@@ -74,7 +74,7 @@
             </div>
 
             <!-- Modal content -->
-            <div class="fixed inset-0 flex items-center justify-center">
+            <div class="relative inset-0 flex items-center justify-center">
                 <div
                     class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all align-middle sm:max-w-lg sm:w-full">
                     <div class="flex justify-end pr-4 pt-2">
@@ -91,6 +91,12 @@
                     <div class="p-5" id="sched">
                         <form action="php/add-appointment-patient.php" method="POST"
                             class="max-w-lg mx-auto mt-1 px-4 py-2 bg-slate-100">
+                            <div class="mb-4" id="profile-pic-output">
+                                <div class="bg-black w-48 h-48 hidden" id="profile-pic-content">
+
+                                </div>
+                                <p class="mt-4 italic text-xs text-blue-500">If you are editing the name or if the image is black, please upload a new image.</p>
+                            </div>
                             <div class="mb-4">
                                 <label for="add_doctor_type" class="block text-sm font-medium text-gray-700">Field of
                                     Specialization</label>
@@ -157,7 +163,6 @@
         </div>
     </div>
 
-
     <!-- Update Appointment modal -->
     <div id="updateModal" class="modal hidden fixed inset-0 overflow-y-auto">
         <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
@@ -167,7 +172,7 @@
             </div>
 
             <!-- Modal content -->
-            <div class="fixed inset-0 flex items-center justify-center">
+            <div class="relative inset-0 flex items-center justify-center">
                 <div
                     class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all align-middle sm:max-w-lg sm:w-full">
                     <div class="flex justify-end pr-4 pt-2">
@@ -184,6 +189,12 @@
                     <div class="p-5" id="resched">
                         <form action="php/update-appointment-patient.php" method="POST"
                             class="max-w-lg mx-auto mt-1 px-4 py-2 bg-slate-100">
+                            <div class="mb-4" id="profile-pic-output">
+                                <div class="bg-black w-48 h-48 hidden" id="edit-profile-pic-content">
+
+                                </div>
+                                <p class="mt-4 italic text-xs text-blue-500">If you are editing the name or if the image is black, please upload a new image.</p>
+                            </div>
                             <div class="mb-4">
                                 <input type="hidden" id="edit_id" name="edit_id" required
                                     class="mt-1 p-2 focus:ring-blue-500 focus:border-blue-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">

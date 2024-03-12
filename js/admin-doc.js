@@ -42,6 +42,15 @@ $(document).ready(function () {
                 $('#edit_address').val(response.address);
                 $('#edit_type').val(response.type);
 
+                // Set the background image of the profile-pic-content div
+                var imageUrl = 'img/' + response.full_name.replace(/ /g, '_') + '.jpg?' + new Date().getTime(); // Add cache buster parameter
+            
+                $('#profile-pic-content').css({
+                    'background-image': 'url(' + imageUrl + ')',
+                    'background-size': 'cover',
+                    'background-position': 'center'
+                });
+
                 // Show the modal
                 $('#editDocModal').removeClass('hidden');
             },
@@ -97,6 +106,7 @@ $(document).ready(function () {
 
 });
 
+
 // Function to open the modal
 function openDocModal() {
     // Show the modal by adding the 'hidden' class
@@ -112,3 +122,104 @@ function cancelDocModal() {
 
 // Add event listener to the buttons
 document.getElementById('AddDoc').addEventListener('click', openDocModal);
+
+//for saving image in add
+document.getElementById('addDoctorForm').addEventListener('submit', function (event) {
+    event.preventDefault(); // Prevent default form submission
+
+    var formData = new FormData(this); // Create FormData object with form data
+    var fileInput = document.getElementById('add_image'); // Get file input element
+
+    // Check if file is selected
+    if (fileInput.files.length === 0) {
+        // Display error message if no file is selected
+        alert('Please select an image file.');
+        return;
+    }
+
+    // Append the selected file to FormData
+    formData.append('add_image', fileInput.files[0]);
+
+    // Send AJAX request
+    var xhr = new XMLHttpRequest();
+    xhr.open('POST', this.action, true);
+
+    // Define AJAX onload function
+    xhr.onload = function () {
+        if (xhr.status === 200) {
+            // Display success message
+            alert('Doctor added successfully');
+            // Redirect to the desired page
+            window.location.href = 'admin-doctors.html';
+        } else {
+            // Display error message
+            alert('Error adding doctor');
+            window.location.href = 'admin-doctors.html';
+        }
+    };
+
+    // Define AJAX onerror function
+    xhr.onerror = function () {
+        // Display error message
+        alert('Error adding doctor');
+        window.location.href = 'admin-doctors.html';
+    };
+
+    // Send FormData with AJAX
+    xhr.send(formData);
+});
+
+
+//for replacing image in edit
+document.getElementById('editDoctorForm').addEventListener('submit', function (event) {
+    
+    event.preventDefault(); // Prevent default form submission
+
+    var formData = new FormData(this); // Create FormData object with form data
+    var fileInput = document.getElementById('edit_image'); // Get file input element
+
+    // Check if file is selected
+    if (fileInput.files.length === 0) {
+        // Display error message if no file is selected
+        var xhr = new XMLHttpRequest();
+        xhr.open('POST', this.action, true);
+    }
+
+    // Append the selected file to FormData
+    formData.append('edit_image', fileInput.files[0]);
+
+    // Send AJAX request
+    var xhr = new XMLHttpRequest();
+    xhr.open('POST', this.action, true);
+
+    // Define AJAX onload function
+    xhr.onload = function () {
+        if (xhr.status === 200) {
+            var response = JSON.parse(xhr.responseText); // Parse the JSON response
+            if (response.success) {
+                // Display success message if server response indicates success
+                alert(response.message);
+                // Redirect to the desired page
+                window.location.href = 'admin-doctors.html';
+            } else {
+                // Display error message if server response indicates failure
+                alert('Error: ' + response.message);
+                window.location.href = 'admin-doctors.html';
+            }
+        } else {
+            // Display error message if AJAX request fails
+            alert('Error adding account. Please try again later.');
+            window.location.href = 'admin-doctors.html';
+        }
+    };
+
+    // Define AJAX onerror function
+    xhr.onerror = function () {
+        // Display error message
+        alert('Error editing doctor');
+        window.location.href = 'admin-doctors.html';
+    };
+
+    // Send FormData with AJAX
+    xhr.send(formData);
+});

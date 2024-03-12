@@ -5,12 +5,12 @@ include_once 'db_connect.php';
 $query = "SELECT * FROM patients_list";
 $result = mysqli_query($conn, $query);
 
-$doctorList = array();
+$patientList = array();
 if(mysqli_num_rows($result) > 0) {
     while($row = mysqli_fetch_assoc($result)) {
-        $doctorList[] = $row;
+        $patientList[] = $row;
     }
 }
 
-echo json_encode($doctorList);
+echo json_encode($patientList);
 ?>

@@ -32,6 +32,13 @@ $(document).ready(function () {
         },
         columns: [
             { data: 'appointment_id', type: 'num' }, // Numeric type for appointment_id
+            {
+                data: null,
+                render: function (data, type, row) {
+                    const imageName = row.patient_name.replace(/ /g, '_');
+                    return '<img src="patient/' + imageName + '.jpg" alt="' + row.patient_name + '" width="100" height="100">';
+                }
+            },
             { data: 'patient_name' },
             { data: 'appointment_date', type: 'date' }, // Date type for appointment_date
             { data: 'time' },
@@ -39,9 +46,17 @@ $(document).ready(function () {
             {
                 data: null,
                 render: function (data, type, row) {
+                    const compbtn = '<button class="complete-button w-2/3 mt-2 bg-green-600 text-white px-2 text-center py-2 rounded-lg mr-2" data-id="' + row.appointment_id + '">Mark Complete</button>'
+                    const confirmbtn = '<button class="confirm-button w-2/3 mt-2 bg-green-600 text-white px-2 text-center py-2 rounded-lg mr-2" data-id="' + row.appointment_id + '">Confirm</button>'
+                    const reschedbtn = '<button class="update-button w-2/3 mt-2 bg-blue-600 text-white px-2 text-center py-2 rounded-lg mr-2" data-id="' + row.appointment_id + '">Reschedule</button>'
+                    const cancelbtn = '<button class="cancel-button w-2/3 mt-2 bg-red-500 text-white px-4 py-2 rounded-lg mr-2" data-id="' + row.appointment_id + '">Cancel</button>'
+
                     if (row.status === 'pending') {
                         // Return a button for cancel action
-                        return '<button class="complete-button w-1/2 bg-green-600 text-white px-4 py-2 rounded-lg mr-2" data-id="' + row.appointment_id + '">Complete</button><button class="update-button w-1/2 mt-2 bg-blue-600 text-white px-4 py-2 rounded-lg mr-2" data-id="' + row.appointment_id + '">Reschedule</button><button class="cancel-button w-1/2 mt-2 bg-red-500 text-white px-4 py-2 rounded-lg mr-2" data-id="' + row.appointment_id + '">Cancel</button>';
+                        return reschedbtn + confirmbtn + cancelbtn;
+                    } else if (row.status === 'confirmed') {
+                        return compbtn;
+
                     } else {
                         // Return empty string if status is not 'pending'
                         return '';
@@ -51,7 +66,7 @@ $(document).ready(function () {
         ],
         columnDefs: [
             {
-                targets: 2, // Index of the 'appointment_date' column
+                targets: 3, // Index of the 'appointment_date' column
                 render: function (data, type, row) {
                     var appointmentDate = new Date(data);
                     var today = new Date();
@@ -69,11 +84,11 @@ $(document).ready(function () {
                 }
             }
         ],
-        order: [[2, 'asc']] // Order by the 'appointment_date' column ascending
+        order: [[3, 'asc']] // Order by the 'appointment_date' column ascending
     });
 
 
-    
+
     // Complete button click handler
     $('#appoTable').on('click', '.complete-button', function () {
         var appointment_id = $(this).data('id');
@@ -136,6 +151,39 @@ $(document).ready(function () {
         });
     });
 
+    // confirm button click handler
+    $('#appoTable').on('click', '.confirm-button', function () {
+        var appointment_id = $(this).data('id');
+
+        // Ask the user for confirmation
+        var confirmCancel = confirm('Are you sure you want to confirm this appointment?');
+        if (!confirmCancel) {
+            // If the user cancels the action, return
+            return;
+        }
+
+        // Send AJAX request to update the status to "cancelled"
+        $.ajax({
+            url: 'php/update_appointment_status.php',
+            method: 'POST',
+            data: {
+                appointment_id: appointment_id,
+                status: 'confirmed'
+            },
+            success: function (response) {
+                // If the update is successful, reload the DataTable
+                console.log('Appointment ' + appointment_id + ' has been confirmed.');
+                alert('Appointment has been confirmed.');
+                location.reload();
+            },
+            error: function (xhr, status, error) {
+                // If there's an error, log it to the console
+                console.error('Error confirming appointment:', error);
+                alert('Error confirming appointment:', error);
+                location.reload();
+            }
+        });
+    });
 
     // Cancel button click handler
     $('#appoTable').on('click', '.cancel-button', function () {

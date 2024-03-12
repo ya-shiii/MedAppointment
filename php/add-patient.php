@@ -2,6 +2,9 @@
 // Include the database connection file
 include_once 'db_connect.php';
 
+// Initialize response array
+$response = array('success' => false, 'message' => '');
+
 // Check if the form is submitted
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Retrieve form data
@@ -13,33 +16,63 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $gender = $_POST['add_type'];
     $address = $_POST['add_address'];
 
-    // Check for duplicates in patients_list table
-    $query_patient = "SELECT * FROM patients_list WHERE Username = '$username' OR Email = '$email'";
-    $result_patient = mysqli_query($conn, $query_patient);
-    $patient_exists = mysqli_num_rows($result_patient) > 0;
-
-    // Check for duplicates in doctor_list table
-    $query_doctor = "SELECT * FROM doctor_list WHERE Username = '$username' OR Email = '$email'";
-    $result_doctor = mysqli_query($conn, $query_doctor);
-    $doctor_exists = mysqli_num_rows($result_doctor) > 0;
-
-    // If duplicate found in either table, display error message
-    if ($patient_exists || $doctor_exists) {
-        echo "<script>alert('Username or Email already exists.'); window.location.href = document.referrer;</script>";
-        exit();
-    }
-
     // Execute the SQL statement to insert a new patient
     $query_insert_patient = "INSERT INTO patients_list (Username, `Password`, FullName, Email, Age, Gender, `Address`) 
                               VALUES ('$username', '$password', '$fullName', '$email', $age, '$gender', '$address')";
-    
+
     if (mysqli_query($conn, $query_insert_patient)) {
-        // If the insertion is successful, redirect back to the page where the form was submitted from
-        echo "<script>alert('Patient added successfully'); window.location.href = document.referrer;</script>";
-        exit();
+        // Upload image
+        $target_dir = "../patient/";
+        $target_file = $target_dir . str_replace(' ', '_', $fullName) . ".jpg"; // Change file extension if needed
+        $imageFileType = strtolower(pathinfo($target_file, PATHINFO_EXTENSION));
+        $uploadOk = 1;
+
+        // Check if file is an actual image or fake image
+        $check = getimagesize($_FILES["add_image"]["tmp_name"]);
+        if ($check === false) {
+            $response['message'] = 'File is not an image.';
+            $uploadOk = 0;
+        }
+
+        // Check file size
+        if ($_FILES["add_image"]["size"] > 500000) {
+            $response['message'] = 'Sorry, your file is too large.';
+            $uploadOk = 0;
+        }
+
+        // Allow only certain file formats
+        if ($imageFileType != "jpg" && $imageFileType != "png" && $imageFileType != "jpeg" && $imageFileType != "gif") {
+            $response['message'] = 'Sorry, only JPG, JPEG, PNG & GIF files are allowed.';
+            $uploadOk = 0;
+        }
+
+        // Check if file already exists, if yes, overwrite it
+        if (file_exists($target_file)) {
+            unlink($target_file); // Remove existing file
+        }
+
+        // Upload the new file
+        if ($uploadOk == 1) {
+            if (move_uploaded_file($_FILES["add_image"]["tmp_name"], $target_file)) {
+                $response['success'] = true;
+                $response['message'] = 'The file ' . htmlspecialchars(basename($_FILES["add_image"]["name"])) . ' has been uploaded.';
+            } else {
+                $response['message'] = 'Sorry, there was an error uploading your file.';
+            }
+        }
+
+        // If the insertion and image upload are successful, set success to true
+        $response['success'] = true;
+        $response['message'] = 'Patient added successfully!';
     } else {
         // If an error occurs, display an error message
-        echo "Error: " . mysqli_error($conn);
+        $response['message'] = "Error: " . mysqli_error($conn);
     }
+} else {
+    // If the form is not submitted via POST method, set an error message
+    $response['message'] = 'Invalid request method.';
 }
+
+// Output JSON response
+echo json_encode($response);
 ?>

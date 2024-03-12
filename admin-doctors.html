@@ -111,7 +111,7 @@
                     </div>
                     <div class="p-5 text-black font-bold text-2xl">Add New Doctor</div>
                     <div class="p-5">
-                        <form action="php/add-doctor.php" method="POST"
+                        <form id="addDoctorForm" action="php/add-doctor.php" method="POST" enctype="multipart/form-data"
                             class="max-w-lg mx-auto mt-1 px-4 py-2 bg-slate-100">
                             <div class="mb-4">
                                 <label for="add_username"
@@ -153,8 +153,12 @@
                                     <option value="">Select Field</option>
                                 </select>
                             </div>
-
-
+                            <div class="mb-4">
+                                <label for="add_image" class="block text-sm font-medium text-gray-700">Profile
+                                    Image</label>
+                                <input type="file" id="add_image" name="add_image" accept="image/*" required
+                                    class="mt-1 p-2 focus:ring-blue-500 focus:border-blue-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
+                            </div>
                             <!-- Submit button -->
                             <div class="mb-4 mt-10">
                                 <button type="submit"
@@ -180,9 +184,9 @@
             </div>
 
             <!-- Modal content -->
-            <div class="fixed inset-0 flex items-center justify-center">
+            <div class="relative inset-0 flex items-center justify-center">
                 <div
-                    class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all align-middle sm:max-w-lg sm:w-full">
+                    class="flex flex-col inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all align-middle sm:max-w-lg sm:w-full">
                     <div class="flex justify-end pr-4 pt-2">
                         <button onclick="cancelDocModal()"
                             class="text-gray-500 hover:text-gray-800 focus:outline-none p-2">
@@ -193,10 +197,23 @@
                             </svg>
                         </button>
                     </div>
-                    <div class="p-5 text-black font-bold text-2xl">Edit Doctor</div>
+                    <div class="pl-5 text-black font-bold text-2xl">Edit Doctor</div>
                     <div class="p-5">
-                        <form action="php/edit-doctor.php" method="POST"
+
+                        <form action="php/edit-doctor.php" method="POST" id="editDoctorForm"
                             class="max-w-lg mx-auto mt-1 px-4 py-2 bg-slate-100">
+                            <div class="mb-4" id="profile-pic-output">
+                                <div class="bg-black w-48 h-48" id="profile-pic-content">
+
+                                </div>
+                                <p class="mt-4 italic text-xs text-blue-500">If you are editing the name or if the image is black, please upload a new image.</p>
+                            </div>
+                            <div class="mb-4" id="profile-pic-input">
+                                <label for="edit_image" class="block text-sm font-medium text-gray-700">Profile
+                                    Image</label>
+                                <input type="file" id="edit_image" name="edit_image" accept="image/*" required
+                                    class="mt-1 p-2 focus:ring-blue-500 focus:border-blue-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
+                            </div>
                             <div class="mb-4">
                                 <input type="hidden" id="edit_id" name="edit_id" required
                                     class="mt-1 p-2 focus:ring-blue-500 focus:border-blue-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
@@ -239,7 +256,6 @@
                                     <option value="">Select Field</option>
                                 </select>
                             </div>
-
 
                             <!-- Submit button -->
                             <div class="mb-4 mt-10">

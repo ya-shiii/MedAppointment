@@ -12,8 +12,11 @@ if (isset($_POST['doctorId'])) {
 
     // Execute query
     if (mysqli_query($conn, $query)) {
+        $query1 = "DELETE FROM medical_appointment WHERE doctor_id = '$doctorId'";
         // Deletion successful
-        echo json_encode(['success' => true, 'message' => '']);
+        if (mysqli_query($conn, $query1)) {
+            echo json_encode(['success' => true, 'message' => '']);
+        }
     } else {
         // Deletion failed
         echo json_encode(['success' => false, 'message' => '']);

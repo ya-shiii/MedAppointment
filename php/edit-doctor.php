@@ -2,6 +2,9 @@
 // Include the database connection file
 include_once 'db_connect.php';
 
+// Initialize the response array
+$response = array('success' => false, 'message' => '');
+
 // Check if the form is submitted
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Retrieve form data
@@ -19,12 +22,43 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     // Execute the query
     if (mysqli_query($conn, $query)) {
-        // If the update is successful, redirect back to the page where the form was submitted from
-        echo '<script>alert("Doctor information updated successfully!"); window.location.href="../admin-doctors.html";</script>';
-        exit();
+        $updateAppointmentQuery = "UPDATE medical_appointment SET doctor_name = '$fullName' WHERE doctor_id = $doctorId";
+        if (mysqli_query($conn, $updateAppointmentQuery)) {
+            if (isset($_FILES['edit_image']) && $_FILES['edit_image']['error'] !== UPLOAD_ERR_NO_FILE) {
+                // Upload image
+                $target_dir = "../img/";
+                $target_file = $target_dir . str_replace(' ', '_', $fullName) . ".jpg"; // Change file extension if needed
+
+                // Check if the file already exists
+                if (file_exists($target_file)) {
+                    // If the file exists, delete it before uploading the new one
+                    unlink($target_file);
+                }
+
+                // Upload the new image file
+                if (move_uploaded_file($_FILES["edit_image"]["tmp_name"], $target_file)) {
+                    $response['success'] = true;
+                    $response['message'] = "The file " . htmlspecialchars(basename($_FILES["edit_image"]["name"])) . " has been uploaded.";
+                } else {
+                    $response['message'] = "Sorry, there was an error uploading your file.";
+                }
+            }
+            $response['success'] = true;
+            $response['message'] = "Doctor updated succesfully.";
+            // Output JSON response
+            echo json_encode($response);
+            exit();
+        }
     } else {
-        // If an error occurs, display an error message
-        echo "Error updating record: " . mysqli_error($conn);
+        // If update fails, display an error message
+        $response['message'] = "Error updating patient: " . mysqli_error($conn);
     }
+} else {
+    // If the form is not submitted via POST method, redirect to index or another appropriate page
+    header("Location: index.php");
+    exit();
 }
+
+// Output JSON response
+echo json_encode($response);
 ?>

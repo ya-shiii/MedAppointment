@@ -43,10 +43,12 @@ $(document).ready(function () {
             {
                 data: null,
                 render: function (data, type, row) {
+                    const reschedbtn = '<button class="update-button w-2/3 mt-2 bg-blue-600 text-white px-2 text-center py-2 rounded-lg mr-2" data-id="' + row.appointment_id + '">Reschedule</button>'
+                    const cancelbtn = '<button class="cancel-button w-2/3 mt-2 bg-red-500 text-white px-4 py-2 rounded-lg mr-2" data-id="' + row.appointment_id + '">Cancel</button>'
 
                     if (row.status === 'pending') {
                         // Return a button for cancel action
-                        return '<button class="update-button w-1/2 mt-2 bg-blue-600 text-white px-4 text-center py-2 rounded-lg mr-2" data-id="' + row.appointment_id + '">Reschedule</button><button class="cancel-button w-1/2 mt-2 bg-red-500 text-white px-4 py-2 rounded-lg mr-2" data-id="' + row.appointment_id + '">Cancel</button>';
+                        return reschedbtn + cancelbtn;
                     } else {
                         // Return empty string if status is not 'pending'
                         return '';
@@ -100,7 +102,14 @@ $(document).ready(function () {
                 // Show the modal
                 $('#updateModal').removeClass('hidden');
 
-
+                const editProfilePicOutput = document.getElementById('edit-profile-pic-content');
+                var imageUrl = 'img/' + appointment.doctor_name.replace(/ /g, '_') + '.jpg'; // Update the file extension if needed
+                editProfilePicOutput.classList.remove('hidden');
+                $(editProfilePicOutput).css({
+                    'background-image': 'url(' + imageUrl + ')',
+                    'background-size': 'cover',
+                    'background-position': 'center'
+                });
                 // Get the value of the edit_doctor_type input field
                 var doctorType = appointment.doctor_type;
 
@@ -126,6 +135,41 @@ $(document).ready(function () {
             error: function (xhr, status, error) {
                 console.error('Error fetching appointment details:', error);
                 // Optionally, display an error message to the user
+            }
+        });
+    });
+
+
+    // Confirm button click handler
+    $('#appoTable').on('click', '.confirm-button', function () {
+        var appointment_id = $(this).data('id');
+
+        // Ask the user for confirmation
+        var confirmConfirm = confirm('Are you sure you want to confirm this appointment?');
+        if (!confirmConfirm) {
+            // If the user cancels the action, return
+            return;
+        }
+
+        // Send AJAX request to update the status to "cancelled"
+        $.ajax({
+            url: 'php/update_appointment_status.php',
+            method: 'POST',
+            data: {
+                appointment_id: appointment_id,
+                status: 'confirm'
+            },
+            success: function (response) {
+                // If the update is successful, reload the DataTable
+                console.log('Appointment ' + appointment_id + ' has been confirmed.');
+                alert('Appointment has been confirmed.');
+                location.reload();
+            },
+            error: function (xhr, status, error) {
+                // If there's an error, log it to the console
+                console.error('Error confirming appointment:', error);
+                alert('Error confirming appointment:', error);
+                location.reload();
             }
         });
     });
@@ -202,9 +246,6 @@ function cancelModal() {
     document.getElementById('date-message').textContent = 'Please select a date.';
     document.getElementById('date-message').style.color = '';
 }
-
-
-
 
 // Edit appointment weekend and time logic
 document.addEventListener('DOMContentLoaded', function () {
@@ -432,6 +473,9 @@ document.addEventListener('DOMContentLoaded', function () {
     // Get the clinic address input element
     const addclinicAddressInput = document.getElementById('add_clinic_address');
 
+    const profilePicOutput = document.getElementById('profile-pic-content');
+
+
     // Add event listener for doctor name select change
     doctorIDSelect.addEventListener('change', function () {
         // Get the selected doctor ID
@@ -446,7 +490,7 @@ document.addEventListener('DOMContentLoaded', function () {
             success: function (response) {
                 // Parse the JSON response
                 const data = JSON.parse(response);
-                
+
                 // Check if the response contains error
                 if (data.error) {
                     // Display the error message
@@ -455,6 +499,14 @@ document.addEventListener('DOMContentLoaded', function () {
                     // Update the doctor name and clinic address inputs with the fetched values
                     adddoctorNameSelect.value = data.FullName;
                     addclinicAddressInput.value = data.ClinicAddress;
+
+                    var imageUrl = 'img/' + data.FullName.replace(/ /g, '_') + '.jpg'; // Update the file extension if needed
+                    profilePicOutput.classList.remove('hidden');
+                    $(profilePicOutput).css({
+                        'background-image': 'url(' + imageUrl + ')',
+                        'background-size': 'cover',
+                        'background-position': 'center'
+                    });
                 }
             },
             error: function (xhr, status, error) {
