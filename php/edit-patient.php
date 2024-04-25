@@ -66,8 +66,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     }
 } else {
     // If the form is not submitted via POST method, redirect to index or another appropriate page
-    header("Location: index.php");
-    exit();
+    $response['message'] = 'Invalid request method';
 }
 
 // Output JSON response

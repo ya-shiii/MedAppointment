@@ -9,12 +9,12 @@ if (isset($_POST['appointment_id'], $_POST['status'])) {
     $status = $_POST['status'];
 
     // Update the pat_app in the database
-    $query = "UPDATE medical_appointment SET pat_app = 'yes' WHERE appointment_id = '$appointment_id'";
+    $query = "UPDATE medical_appointment SET doc_app = 'yes' WHERE appointment_id = '$appointment_id'";
     $result = mysqli_query($conn, $query);
 
     if ($result) {
         // Check if both doc_app and pat_app are 'yes'
-        $check_query = "SELECT doc_app FROM medical_appointment WHERE appointment_id = '$appointment_id' AND pat_app = 'yes' AND doc_app = 'yes'";
+        $check_query = "SELECT pat_app FROM medical_appointment WHERE appointment_id = '$appointment_id' AND pat_app = 'yes' AND doc_app = 'yes'";
         $check_result = mysqli_query($conn, $check_query);
 
         if (mysqli_num_rows($check_result) > 0) {

@@ -51,9 +51,12 @@ $(document).ready(function () {
                     const reschedbtn = '<button class="update-button w-2/3 mt-2 bg-blue-600 text-white px-2 text-center py-2 rounded-lg mr-2" data-id="' + row.appointment_id + '">Reschedule</button>'
                     const cancelbtn = '<button class="cancel-button w-2/3 mt-2 bg-red-500 text-white px-4 py-2 rounded-lg mr-2" data-id="' + row.appointment_id + '">Cancel</button>'
 
-                    if (row.status === 'pending') {
+                    if ((row.status === 'pending')&&(row.doc_app === 'pending')) {
                         // Return a button for cancel action
                         return confirmbtn + reschedbtn + cancelbtn;
+                    } else if ((row.status === 'pending')&&(row.doc_app === 'yes')) {
+                        // Return a button for cancel action
+                        return reschedbtn + cancelbtn;
                     } else if (row.status === 'confirmed') {
                         return compbtn;
 
@@ -164,11 +167,11 @@ $(document).ready(function () {
 
         // Send AJAX request to update the status to "cancelled"
         $.ajax({
-            url: 'php/update_appointment_status.php',
+            url: 'php/update_appointment_status_doc.php',
             method: 'POST',
             data: {
                 appointment_id: appointment_id,
-                status: 'confirmed'
+                status: 'yes'
             },
             success: function (response) {
                 // If the update is successful, reload the DataTable

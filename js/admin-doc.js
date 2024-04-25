@@ -147,13 +147,20 @@ document.getElementById('addDoctorForm').addEventListener('submit', function (ev
     // Define AJAX onload function
     xhr.onload = function () {
         if (xhr.status === 200) {
-            // Display success message
-            alert('Doctor added successfully');
-            // Redirect to the desired page
-            window.location.href = 'admin-doctors.html';
+            var response = JSON.parse(xhr.responseText); // Parse the JSON response
+            if (response.success) {
+                // Display success message if server response indicates success
+                alert(response.message);
+                // Redirect to the desired page
+                window.location.href = 'admin-doctors.html';
+            } else {
+                // Display error message if server response indicates failure
+                alert('Error: ' + response.message);
+                window.location.href = 'admin-doctors.html';
+            }
         } else {
-            // Display error message
-            alert('Error adding doctor');
+            // Display error message if AJAX request fails
+            alert('Error adding account. Please try again later.');
             window.location.href = 'admin-doctors.html';
         }
     };

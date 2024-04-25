@@ -53,7 +53,7 @@ $(document).ready(function () {
                 $('#edit_address').val(patientData.address);
 
                 // Set the background image of the profile-pic-content div
-                var imageUrl = 'patient/' + patientData.username.replace(/ /g, '_') + '.jpg?' + new Date().getTime(); // Update the file extension if needed
+                var imageUrl = 'patient/' + patientData.full_name.replace(/ /g, '_') + '.jpg?' + new Date().getTime(); // Update the file extension if needed
 
                 $('#profile-pic-content').css({
                     'background-image': 'url(' + imageUrl + ')',

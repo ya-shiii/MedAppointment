@@ -43,10 +43,14 @@ $(document).ready(function () {
             {
                 data: null,
                 render: function (data, type, row) {
+                    const confbtn = '<button class="confirm-button w-2/3 mt-2 bg-green-600 text-white px-2 text-center py-2 rounded-lg mr-2" data-id="' + row.appointment_id + '">Confirm</button>'
                     const reschedbtn = '<button class="update-button w-2/3 mt-2 bg-blue-600 text-white px-2 text-center py-2 rounded-lg mr-2" data-id="' + row.appointment_id + '">Reschedule</button>'
                     const cancelbtn = '<button class="cancel-button w-2/3 mt-2 bg-red-500 text-white px-4 py-2 rounded-lg mr-2" data-id="' + row.appointment_id + '">Cancel</button>'
 
-                    if (row.status === 'pending') {
+                    if ((row.status === 'pending')&&(row.pat_app === 'pending')) {
+                        // Return a button for cancel action
+                        return confbtn + reschedbtn + cancelbtn;
+                    } else if ((row.status === 'pending')&&(row.pat_app === 'yes')) {
                         // Return a button for cancel action
                         return reschedbtn + cancelbtn;
                     } else {
@@ -76,7 +80,7 @@ $(document).ready(function () {
                 }
             }
         ],
-        order: [[4, 'asc']] // Order by the 'appointment_date' column ascending
+        order: [[4, 'desc']] // Order by the 'appointment_date' column ascending
     });
 
     // Update button click handler
@@ -157,7 +161,7 @@ $(document).ready(function () {
             method: 'POST',
             data: {
                 appointment_id: appointment_id,
-                status: 'confirm'
+                status: 'yes'
             },
             success: function (response) {
                 // If the update is successful, reload the DataTable
@@ -660,5 +664,119 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
 });
+
+
+
+// For editing account info
+document.addEventListener("DOMContentLoaded", function () {
+    document.getElementById("openEditModal").addEventListener("click", function (event) {
+        event.preventDefault(); // Prevent default link behavior
+
+        // Fetch data using AJAX
+        var formData = new FormData();
+        formData.append('edit_id', document.getElementById("edit_id").value);
+        formData.append('edit_username', document.getElementById("edit_username").value);
+        formData.append('edit_password', document.getElementById("edit_password").value);
+        formData.append('edit_full_name', document.getElementById("edit_full_name").value);
+        formData.append('edit_email', document.getElementById("edit_email").value);
+        formData.append('edit_age', document.getElementById("edit_age").value);
+        formData.append('edit_type', document.getElementById("edit_type").value);
+        formData.append('edit_address', document.getElementById("edit_address").value);
+
+
+
+        fetch('php/fetch-acc-details.php', {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            // Fill the modal with fetched data
+            document.getElementById("edit_id").value = data.id;
+            document.getElementById("edit_username").value = data.username;
+            document.getElementById("edit_password").value = data.password;
+            document.getElementById("edit_full_name").value = data.full_name;
+            document.getElementById("edit_email").value = data.email;
+            document.getElementById("edit_age").value = data.age;
+            document.getElementById("edit_type").value = data.type;
+            document.getElementById("edit_address").value = data.address;
+
+            // Set the background image of the profile-pic-content div
+            var imageUrl = 'patient/' + data.full_name.replace(/ /g, '_') + '.jpg?' + new Date().getTime(); // Update the file extension if needed
+
+            $('#acc-pic-content').css({
+                'background-image': 'url(' + imageUrl + ')',
+                'background-size': 'cover',
+                'background-position': 'center'
+            });
+
+            // Show the modal
+            document.getElementById("editAccModal").classList.remove("hidden");
+        })
+        .catch(error => {
+            console.error('Error fetching data:', error);
+        });
+    });
+});
+
+function cancelAccModal() {
+    // Hide the modal
+    document.getElementById("editAccModal").classList.add("hidden");
+}
+
+//for replacing image in edit
+document.getElementById('editAccForm').addEventListener('submit', function (event) {
+    event.preventDefault(); // Prevent default form submission
+
+    var formData = new FormData(this); // Create FormData object with form data
+    var fileInput = document.getElementById('edit_image'); // Get file input element
+
+    // Check if file is selected
+    if (fileInput.files.length === 0) {
+        // Display error message if no file is selected
+        alert('Please select an image file.');
+    } else {
+        // Append the selected file to FormData
+        formData.append('edit_image', fileInput.files[0]);
+
+        // Send AJAX request
+        var xhr = new XMLHttpRequest();
+        xhr.open('POST', this.action, true);
+
+        // Define AJAX onload function
+        xhr.onload = function () {
+            if (xhr.status === 200) {
+                console.log(xhr.responseText);
+                var response = JSON.parse(xhr.responseText); // Parse the JSON response
+                if (response.success) {
+                    // Display success message if server response indicates success
+                    alert(response.message);
+                    // Redirect to the desired page
+                    window.location.href = 'dashboard.html';
+                } else {
+                    // Display error message if server response indicates failure
+                    alert('Error: ' + response.message);
+                    window.location.href = 'dashboard.html';
+                }
+            } else {
+                // Display error message if AJAX request fails
+                alert('Error editing account. Please try again later.');
+                window.location.href = 'dashboard.html';
+            }
+        };
+
+        // Define AJAX onerror function
+        xhr.onerror = function () {
+            // Display error message
+            alert('Error editing patient information');
+            window.location.href = 'dashboard.html';
+        };
+
+        // Send FormData with AJAX
+        xhr.send(formData);
+    }
+});
+
+
 
 

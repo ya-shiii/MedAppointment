@@ -18,7 +18,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $edit_app_time = mysqli_real_escape_string($conn, $edit_app_time);
 
     // SQL to update appointment
-    $sql = "UPDATE medical_appointment SET appointment_date = '$edit_app_date', time = '$edit_app_time' WHERE appointment_id = '$edit_id'";
+    $sql = "UPDATE medical_appointment SET appointment_date = '$edit_app_date', time = '$edit_app_time', doc_app='pending', pat_app ='yes' WHERE appointment_id = '$edit_id'";
 
     // Execute the query
     if (mysqli_query($conn, $sql)) {
