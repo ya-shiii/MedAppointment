@@ -18,7 +18,7 @@ $(document).ready(function () {
                     return '<button class="edit-button w-full bg-blue-500 text-white px-4 py-2 rounded-lg mr-2" data-id="' + row.DoctorID + '">Edit</button><button class="delete-button w-full bg-red-500 text-white px-4 py-2 rounded-lg mr-2 mt-1" data-id="' + row.DoctorID + '">Delete</button>';
                 }
             }
-        ],order: [[0, 'desc']] // Order by the 'id' column descending
+        ], order: [[0, 'desc']] // Order by the 'id' column descending
     });
 
     // Edit button click handler
@@ -44,7 +44,7 @@ $(document).ready(function () {
 
                 // Set the background image of the profile-pic-content div
                 var imageUrl = 'img/' + response.full_name.replace(/ /g, '_') + '.jpg?' + new Date().getTime(); // Add cache buster parameter
-            
+
                 $('#profile-pic-content').css({
                     'background-image': 'url(' + imageUrl + ')',
                     'background-size': 'cover',
@@ -123,12 +123,11 @@ function cancelDocModal() {
 // Add event listener to the buttons
 document.getElementById('AddDoc').addEventListener('click', openDocModal);
 
-//for saving image in add
-document.getElementById('addDoctorForm').addEventListener('submit', function (event) {
+$('#addDoctorForm').submit(function(event) {
     event.preventDefault(); // Prevent default form submission
 
     var formData = new FormData(this); // Create FormData object with form data
-    var fileInput = document.getElementById('add_image'); // Get file input element
+    var fileInput = $('#add_image')[0]; // Get file input element
 
     // Check if file is selected
     if (fileInput.files.length === 0) {
@@ -141,45 +140,39 @@ document.getElementById('addDoctorForm').addEventListener('submit', function (ev
     formData.append('add_image', fileInput.files[0]);
 
     // Send AJAX request
-    var xhr = new XMLHttpRequest();
-    xhr.open('POST', this.action, true);
-
-    // Define AJAX onload function
-    xhr.onload = function () {
-        if (xhr.status === 200) {
-            var response = JSON.parse(xhr.responseText); // Parse the JSON response
+    $.ajax({
+        url: this.action,
+        type: 'POST',
+        data: formData,
+        dataType: 'json',
+        processData: false, // Prevent jQuery from processing the data
+        contentType: false, // Prevent jQuery from setting contentType
+        success: function(response) {
             if (response.success) {
                 // Display success message if server response indicates success
                 alert(response.message);
+                console.log(response);
                 // Redirect to the desired page
                 window.location.href = 'admin-doctors.html';
             } else {
                 // Display error message if server response indicates failure
-                alert('Error: ' + response.message);
-                window.location.href = 'admin-doctors.html';
+                alert(response.message);
             }
-        } else {
+        },
+        error: function(xhr, status, error) {
             // Display error message if AJAX request fails
+            console.error('Error adding account:', error);
             alert('Error adding account. Please try again later.');
             window.location.href = 'admin-doctors.html';
         }
-    };
-
-    // Define AJAX onerror function
-    xhr.onerror = function () {
-        // Display error message
-        alert('Error adding doctor');
-        window.location.href = 'admin-doctors.html';
-    };
-
-    // Send FormData with AJAX
-    xhr.send(formData);
+    });
 });
+
 
 
 //for replacing image in edit
 document.getElementById('editDoctorForm').addEventListener('submit', function (event) {
-    
+
     event.preventDefault(); // Prevent default form submission
 
     var formData = new FormData(this); // Create FormData object with form data
