@@ -13,7 +13,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     // Perform any additional validation if needed
 
     // Update the appointment in the database
-    $query = "UPDATE medical_appointment SET appointment_date = '$app_date', `time` = '$app_time', doc_app='yes', pat_app ='pending' WHERE appointment_id = '$edit_id'";
+    $query = "UPDATE medical_appointment SET appointment_date = '$app_date', `time` = '$app_time', `status`='reschedule', doc_app='yes', pat_app ='pending' WHERE appointment_id = '$edit_id'";
     $result = mysqli_query($conn, $query);
 
     if ($result) {

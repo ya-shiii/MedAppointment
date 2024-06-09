@@ -17,6 +17,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $appointment_date = $_POST['add_app_date'];
     $appointment_time = $_POST['add_app_time'];
     $status = 'pending';
+    $approval = 'yes';
 
     // Perform any necessary validation here
 
@@ -32,8 +33,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         echo "<script>alert('Invalid request: Duplicate appointment. Please select a different date/time or doctor.'); window.location.href = document.referrer;</script>";
     } else {
         // Insert the appointment into the database
-        $stmt = $conn->prepare("INSERT INTO medical_appointment (patient_id, patient_name, doctor_id, doctor_name, doctor_type, clinic_address, appointment_date, time, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
-        $stmt->bind_param("issssssss", $patient_id, $patient_name, $doctor_id, $doctor_name, $doctor_type, $clinic_address, $appointment_date, $appointment_time, $status);
+        $stmt = $conn->prepare("INSERT INTO medical_appointment (patient_id, patient_name, doctor_id, doctor_name, doctor_type, clinic_address, appointment_date, time, status, pat_app) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+        $stmt->bind_param("isssssssss", $patient_id, $patient_name, $doctor_id, $doctor_name, $doctor_type, $clinic_address, $appointment_date, $appointment_time, $status, $approval);
 
         // Check if the insertion was successful
         if ($stmt->execute()) {

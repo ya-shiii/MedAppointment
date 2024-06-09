@@ -47,14 +47,11 @@ $(document).ready(function () {
                     const reschedbtn = '<button class="update-button w-2/3 mt-2 bg-blue-600 text-white px-2 text-center py-2 rounded-lg mr-2" data-id="' + row.appointment_id + '">Reschedule</button>'
                     const cancelbtn = '<button class="cancel-button w-2/3 mt-2 bg-red-500 text-white px-4 py-2 rounded-lg mr-2" data-id="' + row.appointment_id + '">Cancel</button>'
 
-                    if ((row.status === 'pending')&&(row.pat_app === 'pending')) {
-                        // Return a button for cancel action
-                        return confbtn + reschedbtn + cancelbtn;
+                    if ((row.status === 'reschedule')&&(row.pat_app === 'pending')) {
+                        return confbtn + cancelbtn;
                     } else if ((row.status === 'pending')&&(row.pat_app === 'yes')) {
-                        // Return a button for cancel action
                         return reschedbtn + cancelbtn;
                     } else {
-                        // Return empty string if status is not 'pending'
                         return '';
                     }
                 }

@@ -57,6 +57,8 @@ $(document).ready(function () {
                     } else if ((row.status === 'pending')&&(row.doc_app === 'yes')) {
                         // Return a button for cancel action
                         return reschedbtn + cancelbtn;
+                    } else if ((row.status === 'reschedule')&&(row.doc_app === 'yes')) {
+                        return cancelbtn;
                     } else if (row.status === 'confirmed') {
                         return compbtn;
 

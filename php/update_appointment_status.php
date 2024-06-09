@@ -19,7 +19,7 @@ if (isset($_POST['appointment_id'], $_POST['status'])) {
 
         if (mysqli_num_rows($check_result) > 0) {
             // If both doc_app and pat_app are 'yes', set status to 'confirmed'
-            $update_status_query = "UPDATE medical_appointment SET status = 'confirmed' WHERE appointment_id = '$appointment_id'";
+            $update_status_query = "UPDATE medical_appointment SET status = '$status' WHERE appointment_id = '$appointment_id'";
             $update_status_result = mysqli_query($conn, $update_status_query);
 
             if ($update_status_result) {
